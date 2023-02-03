@@ -31,9 +31,9 @@ func SendEmail() {
 	nonEmailCount := 1
 	rows, err := f.GetRows("Sheet1")
 	for _, row := range rows {
-		companyName := row[1]
-		companyEmails := row[4]
-		companyWebsite := row[3]
+		companyName := row[2]
+		companyEmails := row[5]
+		companyWebsite := row[4]
 		if companyEmails != "[]" {
 			// Remove square brackets from string
 			array := companyEmails[1 : len(companyEmails)-1]
@@ -99,6 +99,7 @@ func EmailTemplate(companyName, email string) {
 		" searched for them in the text. To send the emails, we created a template email and wrote another function to send the emails. " +
 		"Although writing the code wasn't particularly difficult, I believe it demonstrates my dedication and determination to make my dream of" +
 		" starting my career in the US a reality. The code is available on GitHub! \n\n" +
+		"https://github.com/sultanguvenbas/findH1BSponsors" +
 		"\n\nBest regards," +
 		"\n\n" + name + "\r\n"
 	// Connect to the SMTP server
