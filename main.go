@@ -22,8 +22,8 @@ func main() {
 	//googleMapsSearch.FindEmailGoogleMap()
 
 	//send emails
-	//sendEmailToFoundCompanies.SendEmail()
+	sendEmailToFoundCompanies.SendEmail()
 
-	sendEmailToFoundCompanies.EmailTemplate("Ali", "akgol97_@hotmail.com")
+	//sendEmailToFoundCompanies.EmailTemplate("Sultan", "sultanguvenbas@gmail.com")
 
 }
