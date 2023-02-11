@@ -12,6 +12,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func SendEmail() {
@@ -24,27 +25,44 @@ func SendEmail() {
 
 	emptyEmailFile := excelize.NewFile()
 
-	f, err := excelize.OpenFile("employerH1B.xlsx")
+	f, err := excelize.OpenFile("employerForMapSearch.xlsx")
 	if err != nil {
 		log.Fatal(err)
 	}
+	// Set timer for 5 minute
+
 	nonEmailCount := 1
 	rows, err := f.GetRows("Sheet1")
+	startTimer := 0
 	for _, row := range rows {
-		companyName := row[2]
-		companyEmails := row[5]
-		companyWebsite := row[4]
+		timer := time.After(3 * time.Minute)
+		companyName := row[0]
+		companyEmails := row[2]
+		companyWebsite := row[1]
+		startTimer += 1
 		if companyEmails != "[]" {
+			if (startTimer)%40 == 0 {
+				// Wait for timer to finish because otherwise smtp error will raise for requesting too much email
+				<-timer
+				fmt.Println("It is stopped")
+
+			}
+
 			// Remove square brackets from string
 			array := companyEmails[1 : len(companyEmails)-1]
 
 			// Split the string into a slice of strings using the space character as a delimiter
 
 			emailArray := strings.Split(array, " ")
-			fmt.Println(len(emailArray))
+
 			if len(emailArray) != 0 {
 				for _, email := range emailArray {
-					EmailTemplate(companyName, email)
+					if strings.Contains(email, ".png") || strings.Contains(email, "wixpress.com") || strings.Contains(email, ".jpg") || strings.Contains(email, ".jpeg") || strings.Contains(email, "sentry.io") {
+						fmt.Println("don't send", email)
+					} else {
+						EmailTemplate(companyName, email)
+
+					}
 
 				}
 			}
@@ -92,10 +110,10 @@ func EmailTemplate(companyName, email string) {
 		"\n\n" + "I would be grateful for the opportunity to discuss my qualifications further and how I can contribute to your company's success. Please find attached my resume and portfolio for your review." +
 		"\n\nThank you for considering my application. I look forward to hearing from you soon." +
 		"\n\n" +
-		"Note: I was searching for a company that offers H1B visa sponsorship, and I came across the website h1bgrader," +
-		" which lists all the companies that have sponsored visas in the past. However, the website did not provide any " +
-		"email addresses to contact these companies. So, I teamed up with my friend Ali and wrote a code to find the websites" +
-		" of these companies using their names. We then searched for email addresses on these websites by writing a function that" +
+		"Note: I arrived in the United States in June on a J1 visa, but I extended my visa as a B2 visa. " +
+		"Currently, I am on a B2 visa and I am in the process of extending it to a F1 student visa. I and my friend were searching for a company that offers H1B visa sponsorship and we utilized Google Maps API to gather information on IT companies in the 50 states and 10 most populous cities." +
+		"This search resulted in over 8,000 company names. So, We wrote a script to find companies emails" +
+		" of these companies using their names. Then we searched for email addresses on these websites by writing a function that" +
 		" searched for them in the text. To send the emails, we created a template email and wrote another function to send the emails. " +
 		"Although writing the code wasn't particularly difficult, I believe it demonstrates my dedication and determination to make my dream of" +
 		" starting my career in the US a reality. The code is available on GitHub! \n\n" +
@@ -142,7 +160,7 @@ func EmailTemplate(companyName, email string) {
 		fmt.Println("Email Couldn't send" + companyName)
 		return
 	}
-
+	saveCompaniesThatReceivedEmails(companyName, email)
 	fmt.Println("Email sent successfully!")
 }
 
